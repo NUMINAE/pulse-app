@@ -177,7 +177,7 @@ window.addEventListener('resize', () => placeInd(true));
   html.dataset.theme = S.theme; $('meta[name="theme-color"]').content = S.theme === 'light' ? '#f1edff' : '#120c2b';
   $$('[data-i]', tabsEl).forEach(b => b.innerHTML = icon(b.dataset.i));
   // the intro plays on a first visit; after that Pulse opens on the dashboard
-  let seen = false; try { seen = localStorage.getItem('pulse-seen') === '1'; localStorage.setItem('pulse-seen', '1'); } catch (_) {}
+  let seen = false; try { seen = localStorage.getItem('pulse-seen') === '1'; if (!EMBED) localStorage.setItem('pulse-seen', '1'); } catch (_) {}
   const start = Q.get('screen') || (seen && !EMBED ? 'home' : 'onboard'), def = SCREENS[start] ? start : 'onboard', params = Object.fromEntries(Q);
   if (SCREENS[def].tab || def === 'onboard') rootSwitch(def, params);
   else { hist.on = false; rootSwitch(def === 'link' ? 'onboard' : 'home', {}); push(def, def === 'tx' && !params.id ? { id: S.tx.find(t => t.d === TODAY).id } : params, true); hist.on = !EMBED; }
