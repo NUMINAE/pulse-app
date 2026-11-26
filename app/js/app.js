@@ -163,7 +163,7 @@ device.addEventListener('click', e => {
 });
 // the showcase page drives the embedded prototype with messages
 window.addEventListener('message', e => { const m = e.data; if (!m || !m.pulse) return;
-  if (m.pulse === 'go' && SCREENS[m.screen]) { if (topScreen()?.name === m.screen && !m.force) return; busy = false; if (!SCREENS[m.screen].tab && m.screen !== 'onboard' && !SCREENS[stack[0].name].tab) rootSwitch('home', {}); go(m.screen, m.params || {}); }
+  if (m.pulse === 'go' && SCREENS[m.screen]) { if (topScreen()?.name === m.screen && !m.force) return; busy = false; if (!SCREENS[m.screen].tab && m.screen !== 'onboard' && !SCREENS[stack[0].name].tab) rootSwitch('home', {}); go(m.screen, m.params || (m.screen === 'tx' ? { id: S.tx.find(t => t.d === TODAY).id } : {})); }
   if (m.pulse === 'theme') setTheme(m.theme); });
 window.addEventListener('resize', () => placeInd(true));
 

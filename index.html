@@ -1,4 +1,417 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pulse</title><meta http-equiv="refresh" content="0; url=app/"><style>body{background:#120c2b}</style></head>
-<body><a href="app/" style="color:#b9adff">Open the Pulse prototype</a></body></html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pulse: a budgeting app, designed and built by Numinae Studio</title>
+<meta name="description" content="Pulse reads your card and sorts every spend. A working prototype with 12 screens in dark and light, designed and built by Numinae Studio.">
+<meta name="theme-color" content="#0d0824">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Pulse: know where it goes">
+<meta property="og:description" content="A budgeting app designed and built by Numinae Studio. 12 screens, dark and light, a prototype you can tap through.">
+<meta property="og:image" content="https://numinae.github.io/pulse-app/media/pulse-share.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://numinae.github.io/pulse-app/media/pulse-share.png">
+<link rel="icon" href="app/icon.svg" type="image/svg+xml">
+<link rel="preload" href="app/fonts/sora.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="app/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face { font-family: Sora; src: url(app/fonts/sora.woff2) format('woff2'); font-weight: 100 800; font-display: swap; }
+@font-face { font-family: Manrope; src: url(app/fonts/manrope.woff2) format('woff2'); font-weight: 200 800; font-display: swap; }
+:root {
+  --bg: #0d0824; --panel: #17103a; --ink: #fff; --soft: rgba(230,224,255,.74); --faint: rgba(230,224,255,.45);
+  --coral: #ff6a4d; --coral-a: #ff8a5c; --coral-b: #ff4d6d; --lav: #b9adff; --violet: #7c6cff; --green: #33c7a3; --amber: #ffb020;
+  --out: cubic-bezier(.16,1,.3,1); --spring: cubic-bezier(.2,1.4,.4,1);
+  --w: min(1240px, calc(100vw - 48px));
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: var(--bg); color: var(--ink); scroll-behavior: smooth; overflow-x: clip; }
+body { font: 500 17px/1.55 Manrope, system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+h1, h2, h3, .num { font-family: Sora, sans-serif; letter-spacing: -0.035em; }
+a { color: inherit; } img, video, svg, iframe { display: block; } button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--lav); outline-offset: 3px; border-radius: 12px; }
+.wrap { width: var(--w); margin: 0 auto; }
+.soft { color: var(--soft); }
+
+/* glass, the same recipe the app uses */
+.glass { position: relative; background: linear-gradient(140deg, rgba(255,255,255,.14), rgba(255,255,255,.045) 60%, rgba(255,255,255,.08)); box-shadow: 0 30px 60px -30px rgba(4,1,20,.9); }
+.glass::before { content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; pointer-events: none; background: linear-gradient(140deg, rgba(255,255,255,.7), rgba(255,255,255,.08) 38%, rgba(255,255,255,.03) 62%, rgba(255,255,255,.28));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); }
+.btn { display: inline-flex; align-items: center; gap: 10px; height: 54px; padding: 0 26px; border-radius: 27px; font: 700 16px Sora; letter-spacing: -0.02em; text-decoration: none; transition: scale .35s var(--spring); white-space: nowrap; }
+.btn:active { scale: .96; }
+.btn.primary { color: #fff; background: linear-gradient(135deg, var(--coral-a), var(--coral-b)); box-shadow: 0 14px 30px -10px rgba(255,77,109,.85), inset 0 1.5px 0 rgba(255,255,255,.5); }
+.btn.ghost { border-radius: 27px; }
+.btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+
+/* aurora behind the top of the page */
+.aurora { position: absolute; inset: 0 0 auto 0; height: 1300px; overflow: hidden; z-index: -1; pointer-events: none; -webkit-mask-image: linear-gradient(#000 60%, transparent); mask-image: linear-gradient(#000 60%, transparent); }
+.aurora i { position: absolute; border-radius: 50%; filter: blur(90px); }
+.aurora .a { width: 760px; height: 760px; left: 46%; top: -320px; background: #5b3ff0; opacity: .75; animation: d1 18s ease-in-out infinite alternate; }
+.aurora .b { width: 560px; height: 560px; left: -160px; top: 260px; background: #ff5a4f; opacity: .38; animation: d2 22s ease-in-out infinite alternate; }
+.aurora .c { width: 620px; height: 620px; left: 62%; top: 560px; background: #7c6cff; opacity: .4; animation: d1 26s ease-in-out infinite alternate-reverse; }
+@keyframes d1 { to { transform: translate(-120px, 90px) scale(1.12); } } @keyframes d2 { to { transform: translate(140px, -70px) scale(.9); } }
+
+/* header */
+header.top { position: sticky; top: 0; z-index: 50; transition: background .3s, box-shadow .3s; }
+header.top.stuck { background: rgba(13,8,36,.72); -webkit-backdrop-filter: blur(20px) saturate(160%); backdrop-filter: blur(20px) saturate(160%); box-shadow: 0 1px 0 rgba(255,255,255,.07); }
+header.top .wrap { display: flex; align-items: center; justify-content: space-between; height: 76px; gap: 24px; }
+.lockup img { height: 30px; width: auto; }
+header nav { display: flex; gap: 4px; }
+header nav a { text-decoration: none; font-size: 15px; font-weight: 700; color: var(--soft); padding: 9px 14px; border-radius: 20px; transition: color .2s, background .2s; }
+header nav a:hover { color: #fff; background: rgba(255,255,255,.08); }
+header .btn { height: 44px; padding: 0 20px; font-size: 14.5px; }
+
+/* hero */
+.hero { padding: 40px 0 120px; }
+.hero .wrap { display: grid; grid-template-columns: 1fr auto; gap: 56px; align-items: center; }
+.appmark { display: flex; gap: 14px; align-items: center; }
+.appmark img { width: 58px; height: 58px; border-radius: 17px; box-shadow: 0 14px 28px -10px rgba(255,77,109,.8); }
+.appmark b { display: block; font: 700 22px Sora; letter-spacing: -0.03em; } .appmark span { font-size: 15px; color: var(--soft); }
+.hero h1 { font-size: clamp(56px, 7.4vw, 108px); line-height: .96; font-weight: 700; letter-spacing: -0.055em; margin-top: 34px; }
+.hero h1 span { display: block; }
+.hero .lead { font-size: 19.5px; line-height: 1.6; color: var(--soft); max-width: 34em; margin-top: 26px; }
+.hero .ctas { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 34px; }
+.facts { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 44px; }
+.facts { max-width: 600px; } .facts div { flex: 1 1 0; padding: 14px 20px 15px; border-radius: 24px; min-width: 0; }
+.facts b { display: block; font: 700 26px Sora; letter-spacing: -0.04em; } .facts span { font-size: 14px; color: var(--soft); }
+
+.stage { position: relative; display: grid; grid-template-columns: auto 190px; gap: 26px; align-items: center; }
+.phone { position: relative; padding: 11px; border-radius: 64px; background: linear-gradient(160deg, #3a3162, #17122e 40%, #0e0a20); box-shadow: 0 60px 120px -30px rgba(0,0,0,.85), 0 0 0 1.5px rgba(255,255,255,.14) inset, 0 0 120px -20px rgba(124,108,255,.45); }
+.phone::after { content: ''; position: absolute; right: -3px; top: 190px; width: 4px; height: 90px; border-radius: 2px; background: #2a2350; }
+.phone .scr { width: 390px; height: 844px; border-radius: 53px; overflow: hidden; background: #120c2b; transform-origin: top left; }
+.phone iframe { width: 390px; height: 844px; border: 0; }
+.phone.scaled { padding: calc(11px * var(--k)); border-radius: calc(64px * var(--k)); }
+.phone.scaled .scr { width: calc(390px * var(--k)); height: calc(844px * var(--k)); border-radius: calc(53px * var(--k)); }
+.phone.scaled iframe { transform: scale(var(--k)); transform-origin: 0 0; }
+.jump h3 { font: 700 15px Manrope; color: var(--soft); letter-spacing: 0; margin: 0 0 10px 6px; }
+.jump ul { list-style: none; display: grid; gap: 6px; }
+.jump button { width: 100%; text-align: left; height: 42px; padding: 0 16px; border-radius: 21px; font-size: 14.5px; font-weight: 700; color: var(--soft); display: flex; align-items: center; gap: 10px; transition: background .25s, color .25s; }
+.jump button i { width: 8px; height: 8px; border-radius: 4px; background: var(--c, var(--faint)); flex: none; }
+.jump button:hover { color: #fff; background: rgba(255,255,255,.07); }
+.jump button.on { color: #1a1440; background: #fff; }
+.theme { position: relative; display: grid; grid-template-columns: 1fr 1fr; height: 44px; border-radius: 22px; margin-top: 18px; background: rgba(255,255,255,.08); }
+.theme button { position: relative; z-index: 1; font-size: 14px; font-weight: 700; color: var(--soft); transition: color .25s; }
+.theme button.on { color: #1a1440; }
+.theme .thumb { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 18px; background: #fff; transition: transform .45s var(--spring); }
+.theme.light .thumb { transform: translateX(100%); }
+.jump p { font-size: 13.5px; color: var(--faint); margin: 16px 6px 0; line-height: 1.45; }
+.mobile-try { display: none; }
+
+/* sections */
+section.block { padding: 110px 0 0; scroll-margin-top: 60px; }
+.shead { display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; flex-wrap: wrap; margin-bottom: 40px; }
+.shead h2 { font-size: clamp(38px, 4.4vw, 60px); font-weight: 700; line-height: 1.02; letter-spacing: -0.05em; }
+.shead p { font-size: 18px; color: var(--soft); max-width: 36em; margin-top: 14px; }
+
+/* gallery */
+.gtoggle { position: relative; display: grid; grid-template-columns: 1fr 1fr; width: 220px; height: 48px; border-radius: 24px; }
+.gtoggle button { position: relative; z-index: 1; font-size: 15px; font-weight: 700; color: var(--soft); transition: color .25s; }
+.gtoggle button.on { color: #1a1440; }
+.gtoggle .thumb { position: absolute; top: 5px; bottom: 5px; left: 5px; width: calc(50% - 5px); border-radius: 19px; background: #fff; transition: transform .45s var(--spring); }
+.gtoggle.light .thumb { transform: translateX(100%); }
+.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 44px 28px; }
+.shot { text-align: left; display: block; width: 100%; }
+.shot .img { position: relative; aspect-ratio: 390 / 844; border-radius: 34px; overflow: hidden; background: #1c1446; box-shadow: 0 40px 60px -34px rgba(0,0,0,.9), 0 0 0 1.5px rgba(255,255,255,.1); transition: transform .5s var(--spring), box-shadow .4s; }
+.shot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity .5s; }
+.shot img.l { opacity: 0; } .grid.light .shot img.l { opacity: 1; } .grid.light .shot img.d { opacity: 0; }
+.shot:hover .img { transform: translateY(-8px); box-shadow: 0 50px 70px -34px rgba(0,0,0,.9), 0 0 0 2px var(--lav); }
+.shot .cap { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin: 16px 4px 0; }
+.shot h3 { font-size: 19px; font-weight: 700; letter-spacing: -0.03em; }
+.shot .try { font-size: 13.5px; font-weight: 700; color: var(--lav); opacity: 0; transition: opacity .25s; white-space: nowrap; } .shot:hover .try { opacity: 1; }
+.shot p { font-size: 14.5px; line-height: 1.5; color: var(--soft); margin: 5px 4px 0; }
+
+/* motion */
+.mgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.mcard { border-radius: 40px; padding: 26px 26px 28px; display: flex; flex-direction: column; }
+.mcard .phone { --k: .62; align-self: center; }
+.mcard h3 { font-size: 23px; font-weight: 700; margin-top: 26px; }
+.mcard p { font-size: 15.5px; color: var(--soft); margin-top: 8px; line-height: 1.55; flex: 1; }
+.replay { align-self: flex-start; margin-top: 18px; height: 42px; padding: 0 18px 0 14px; border-radius: 21px; font-size: 14.5px; font-weight: 700; display: inline-flex; gap: 8px; align-items: center; }
+.replay svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; transition: rotate .6s var(--out); } .replay:active svg { rotate: -360deg; transition: none; }
+.rules { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 24px; }
+.rules div { border-radius: 30px; padding: 22px 22px 24px; }
+.rules b { font: 700 18px Sora; letter-spacing: -0.03em; } .rules p { font-size: 14.5px; color: var(--soft); margin-top: 6px; line-height: 1.5; }
+.curve { height: 46px; margin-bottom: 14px; } .curve path { fill: none; stroke: var(--coral); stroke-width: 3; stroke-linecap: round; }
+
+/* design system */
+.ds { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 24px; }
+.ds > div { border-radius: 40px; padding: 30px; min-width: 0; }
+.ds > .parts { padding: 0; border-radius: 0; }
+.ds h3 { font-size: 22px; font-weight: 700; margin-bottom: 20px; }
+.swatches { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.sw { border-radius: 24px; padding: 76px 14px 13px; font-size: 13.5px; font-weight: 700; position: relative; overflow: hidden; color: #1a1440; box-shadow: inset 0 1px 0 rgba(255,255,255,.4); }
+.sw span { display: block; font-weight: 600; opacity: .72; font-size: 12.5px; }
+.sw.dk { color: #fff; box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.14); }
+.sw.wide { grid-column: span 2; }
+.type .spec { padding: 6px 0 20px; } .type .spec + .spec { padding-top: 20px; border-top: 1.5px solid rgba(255,255,255,.08); }
+.type .big { font: 700 72px/1 Sora; letter-spacing: -0.05em; } .type .big small { font-size: 38px; }
+.type .meta { font-size: 14px; color: var(--faint); margin-top: 8px; }
+.type .body { font-size: 19px; line-height: 1.5; }
+.scale { display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap; } .scale span { font-family: Sora; font-weight: 700; letter-spacing: -0.04em; } .scale small { display: block; font: 600 12px Manrope; color: var(--faint); letter-spacing: 0; margin-top: 4px; }
+.parts { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.part { border-radius: 30px; padding: 22px; background: rgba(255,255,255,.04); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.07); }
+.part .demo { height: 110px; display: grid; place-items: center; min-width: 0; } .part .demo > * { max-width: 100%; }
+.part { min-width: 0; }
+.part b { display: block; font: 700 16px Sora; letter-spacing: -0.02em; margin-top: 14px; } .part p { font-size: 14px; color: var(--soft); margin-top: 4px; line-height: 1.5; }
+.radii { display: flex; gap: 10px; align-items: flex-end; } .radii i { display: grid; place-items: end start; width: 56px; height: 56px; background: rgba(185,173,255,.2); box-shadow: inset 0 0 0 1.5px var(--lav); font: 700 11px Sora; color: var(--lav); padding: 6px 9px; font-style: normal; }
+.tilerow { display: flex; gap: 10px; } .tilerow i { width: 46px; height: 46px; border-radius: 16px; background: linear-gradient(140deg, color-mix(in srgb, var(--c) 72%, #fff), var(--c)); box-shadow: 0 8px 18px -6px var(--c), inset 0 1px 0 rgba(255,255,255,.55); }
+.bars2 { width: 100%; min-width: 0; display: grid; gap: 10px; } .bars2 i { display: block; height: 12px; border-radius: 6px; background: rgba(255,255,255,.1); overflow: hidden; } .bars2 i::after { content: ''; display: block; height: 100%; width: var(--w); border-radius: inherit; background: var(--c); box-shadow: inset 0 2px 1px rgba(255,255,255,.45); }
+.glassdemo { width: 150px; height: 84px; border-radius: 26px; }
+
+/* process */
+.proc { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+.pcard { border-radius: 34px; padding: 14px 14px 20px; text-decoration: none; display: block; transition: transform .45s var(--spring); }
+.pcard:hover { transform: translateY(-6px); }
+.pcard img { width: 100%; height: auto; border-radius: 24px; background: #0b0720; }
+.pcard h3 { font-size: 19px; font-weight: 700; margin: 16px 6px 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.pcard h3 em { font: 700 12.5px Manrope; font-style: normal; letter-spacing: 0; color: #fff; background: linear-gradient(135deg, var(--coral-a), var(--coral-b)); border-radius: 12px; padding: 4px 10px; }
+.pcard p { font-size: 14.5px; color: var(--soft); margin: 6px 6px 0; line-height: 1.5; }
+.pcard.won { box-shadow: 0 30px 60px -30px rgba(4,1,20,.9), 0 0 0 2.5px var(--coral); }
+.why { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 22px; margin-top: 26px; }
+.why div { border-radius: 30px; padding: 24px; } .why b { font: 700 18px Sora; letter-spacing: -0.03em; } .why p { font-size: 15px; color: var(--soft); margin-top: 6px; line-height: 1.55; }
+
+/* ad */
+.adwrap { display: grid; grid-template-columns: 1fr 300px; gap: 28px; align-items: stretch; }
+.adwrap video { width: 100%; height: 100%; object-fit: cover; border-radius: 36px; background: #000; box-shadow: 0 40px 80px -30px rgba(0,0,0,.9), 0 0 0 1.5px rgba(255,255,255,.1); }
+.adwrap .v169 { aspect-ratio: 16 / 9; height: auto; }
+.adnote { border-radius: 36px; padding: 28px; display: flex; flex-direction: column; justify-content: space-between; gap: 20px; }
+.adnote h3 { font-size: 24px; font-weight: 700; } .adnote p { font-size: 15.5px; color: var(--soft); margin-top: 8px; line-height: 1.55; }
+.adnote a { font-size: 15px; font-weight: 700; color: var(--lav); text-decoration: none; }
+.adnote .v916 { width: 100%; aspect-ratio: 9 / 16; height: auto; border-radius: 26px; display: none; }
+
+/* closing */
+.close { margin: 130px auto 0; border-radius: 48px; padding: 70px 40px; text-align: center; overflow: hidden; position: relative; isolation: isolate; }
+.close::after { content: ''; position: absolute; inset: auto -20% -60% -20%; height: 120%; z-index: -1; background: radial-gradient(closest-side, rgba(255,106,77,.45), transparent); filter: blur(30px); }
+.close h2 { font-size: clamp(40px, 5vw, 72px); font-weight: 700; letter-spacing: -0.05em; line-height: 1; }
+.close p { font-size: 19px; color: var(--soft); margin: 18px auto 0; max-width: 34em; }
+.close .btn { margin-top: 34px; }
+footer { padding: 60px 0 50px; }
+footer .wrap { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; }
+footer img { height: 26px; width: auto; opacity: .9; }
+footer p { font-size: 14px; color: var(--faint); max-width: 44em; }
+footer nav { display: flex; gap: 18px; } footer nav a { font-size: 14px; font-weight: 700; color: var(--soft); text-decoration: none; }
+
+/* one orchestrated entrance at the top, quiet reveals below */
+.hero .in-1, .hero .in-2, .hero .in-3, .hero .in-4, .hero .stage { opacity: 0; }
+.ready .hero .in-1, .ready .hero .in-2, .ready .hero .in-3, .ready .hero .in-4 { animation: rise .9s var(--out) both; }
+.ready .hero .in-2 { animation-delay: .08s; } .ready .hero .in-3 { animation-delay: .16s; } .ready .hero .in-4 { animation-delay: .24s; }
+.ready .hero .stage { animation: phonein 1.3s var(--out) .1s both; }
+@keyframes rise { from { opacity: 0; transform: translateY(30px); filter: blur(8px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes phonein { from { opacity: 0; transform: translateY(70px) rotate(4deg) scale(.94); } to { opacity: 1; transform: none; } }
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity .8s var(--out), transform .9s var(--out); }
+.reveal.seen { opacity: 1; transform: none; }
+
+@media (max-width: 1180px) {
+  .hero .wrap { grid-template-columns: 1fr; } .stage { justify-self: center; }
+  .grid { grid-template-columns: repeat(3, 1fr); } .mgrid { grid-template-columns: 1fr 1fr; } .mgrid .mcard:last-child { display: none; }
+  .rules, .proc, .parts { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ds { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 860px) {
+  header nav { display: none; }
+  .stage { display: none; } .mobile-try { display: block; margin-top: 40px; }
+  .mobile-try a { display: block; text-decoration: none; border-radius: 40px; padding: 18px; }
+  .mobile-try img { width: 100%; height: auto; border-radius: 28px; }
+  .mobile-try span { display: flex; justify-content: center; margin-top: 16px; }
+  .grid { grid-template-columns: 1fr 1fr; gap: 32px 16px; } .shot .img { border-radius: 24px; } .shot h3 { font-size: 16px; } .shot p { display: none; }
+  .mgrid { grid-template-columns: 1fr; } .mgrid .mcard:last-child { display: flex; }
+  .why { grid-template-columns: 1fr; } .adwrap { grid-template-columns: 1fr; } .adwrap .v169 { display: none; } .adnote .v916 { display: block; }
+  .close { padding: 54px 24px; border-radius: 38px; }
+}
+@media (max-width: 560px) {
+  :root { --w: calc(100vw - 32px); }
+  .lockup img { height: 24px; } header .btn { height: 40px; padding: 0 16px; font-size: 13.5px; }
+  .hero { padding-top: 24px; } .hero .lead { font-size: 17.5px; } .facts div { min-width: 0; flex: 1 1 40%; }
+  .rules, .proc, .parts, .swatches { grid-template-columns: repeat(2, minmax(0, 1fr)); } .sw.wide { grid-column: span 2; } .facts div { flex: 1 1 40%; }
+  .type .big { font-size: 54px; } .radii i { width: 40px; height: 40px; } .tilerow { gap: 6px; } .tilerow i { width: 30px; height: 30px; border-radius: 11px; } .glassdemo { width: 110px; } .scale { gap: 12px; } .scale span:first-child { font-size: 44px !important; } section.block { padding-top: 84px; } .ds > div { padding: 22px; border-radius: 32px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01s !important; animation-delay: 0s !important; transition-duration: .01s !important; } html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"><i class="a"></i><i class="b"></i><i class="c"></i></div>
+
+<header class="top"><div class="wrap">
+  <a class="lockup" href="https://github.com/NUMINAE" aria-label="Numinae Studio on GitHub"><img src="brand/numinae-lockup-horizontal-white.svg" alt="Numinae"></a>
+  <nav aria-label="Sections"><a href="#screens">Screens</a><a href="#motion">Motion</a><a href="#system">Design system</a><a href="#process">Process</a><a href="#ad">The ad</a></nav>
+  <a class="btn primary" href="https://t.me/numinaestudio">Message me</a>
+</div></header>
+
+<main>
+<section class="hero"><div class="wrap">
+  <div>
+    <div class="appmark in-1"><img src="app/icon-192.png" alt=""><div><b>Pulse</b><span>Budgeting app, iOS and Android concept</span></div></div>
+    <h1 class="in-2"><span>Know where</span><span>it goes.</span></h1>
+    <p class="lead in-3">Pulse reads your card and sorts every spend for you. I started from the 10-second ad I made for the brand and designed the whole app around it, then built it as a prototype that works like the real thing. Tap through it right here.</p>
+    <div class="ctas in-4"><a class="btn primary" href="app/" target="_blank" rel="noopener">Open full screen<svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-8 8M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></svg></a><a class="btn ghost glass" href="#ad">Watch the ad<svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5-11-6.5z"/></svg></a></div>
+    <div class="facts in-4"><div class="glass"><b>12</b><span>screens, each in dark and light</span></div><div class="glass"><b>96</b><span>sample spends that add up</span></div><div class="glass"><b>0</b><span>libraries, just HTML, CSS and JS</span></div></div>
+    <div class="mobile-try"><a class="glass" href="app/"><img src="screens/pulse-dashboard-dark.png" alt="The Pulse dashboard: $1,284.60 spent in November, a category ring and today's spends" width="780" height="1688"><span class="btn primary">Tap through the app</span></a></div>
+  </div>
+
+  <div class="stage">
+    <div class="phone"><div class="scr"><iframe id="proto" src="app/index.html?frame=1&screen=onboard" title="Pulse prototype, live" loading="eager"></iframe></div></div>
+    <div class="jump">
+      <h3>Jump to a screen</h3>
+      <ul id="jump"></ul>
+      <div class="theme" id="theme" role="group" aria-label="Theme"><i class="thumb"></i><button class="on" data-t="dark">Dark</button><button data-t="light">Light</button></div>
+      <p>Everything inside the phone works: swipe from the left edge to go back, drag panels down, turn the ring on Categories.</p>
+    </div>
+  </div>
+</div></section>
+
+<section class="block" id="screens"><div class="wrap">
+  <div class="shead reveal"><div><h2>Twelve screens,<br>two themes</h2><p>From the first launch to the settings page, every screen a real budgeting app needs. Tap one to open it in the live prototype.</p></div>
+    <div class="gtoggle glass" id="gtoggle" role="group" aria-label="Gallery theme"><i class="thumb"></i><button class="on" data-t="dark">Dark</button><button data-t="light">Light</button></div></div>
+  <div class="grid" id="grid"></div>
+</div></section>
+
+<section class="block" id="motion"><div class="wrap">
+  <div class="shead reveal"><div><h2>Motion that explains</h2><p>Every animation shows where a number came from or where you just went. Nothing moves just to fill the screen.</p></div></div>
+  <div class="mgrid">
+    <article class="mcard glass reveal"><div class="phone scaled"><div class="scr"><iframe data-src="app/index.html?frame=1&screen=categories" title="Categories ring, live" loading="lazy"></iframe></div></div>
+      <h3>A ring you can turn</h3><p>Drag the ring and it settles on the nearest slice with a spring. The centre swaps to that category, and its row lights up below.</p><button class="replay glass" data-replay="0"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.5-5.8M4 4v4.5h4.5"/></svg>Replay</button></article>
+    <article class="mcard glass reveal"><div class="phone scaled"><div class="scr"><iframe data-src="app/index.html?frame=1&screen=insights" title="Insights charts, live" loading="lazy"></iframe></div></div>
+      <h3>Charts that draw in order</h3><p>October goes first as a faint line, then November traces over it and a dotted forecast runs to the end of the month. Tap a bar for that day's total.</p><button class="replay glass" data-replay="1"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.5-5.8M4 4v4.5h4.5"/></svg>Replay</button></article>
+    <article class="mcard glass reveal"><div class="phone scaled"><div class="scr"><iframe data-src="app/index.html?frame=1&screen=link" title="Linking a card, live" loading="lazy"></iframe></div></div>
+      <h3>Reading a card</h3><p>Pick a bank and the card lands, a light sweeps across it, and Pulse counts the spends it found before filing them into categories.</p><button class="replay glass" data-replay="2"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.5-5.8M4 4v4.5h4.5"/></svg>Replay</button></article>
+  </div>
+  <div class="rules">
+    <div class="glass reveal"><svg class="curve" viewBox="0 0 120 46"><path d="M4 42C30 42 34 4 116 4"/></svg><b>Screens slide, the old one steps back</b><p>A new screen comes in from the right in 460 ms. The one behind shrinks and dims, so you always know where back goes.</p></div>
+    <div class="glass reveal"><svg class="curve" viewBox="0 0 120 46"><path d="M4 42C24 42 30 -6 60 6S90 4 116 4"/></svg><b>Springs for things you touch</b><p>Buttons, switches, the tab bar and the ring all overshoot slightly and settle, like real objects.</p></div>
+    <div class="glass reveal"><svg class="curve" viewBox="0 0 120 46"><path d="M4 42C40 42 40 40 60 23S80 4 116 4"/></svg><b>Numbers count up</b><p>Totals roll from zero when a screen opens and from the old value when you change something.</p></div>
+    <div class="glass reveal"><svg class="curve" viewBox="0 0 120 46"><path d="M4 23C20 8 34 8 50 23S80 38 96 23 112 12 116 14"/></svg><b>The light moves with you</b><p>The aurora behind the app drifts slowly and shifts to a new place on every screen. Switching themes spreads out from your finger.</p></div>
+  </div>
+</div></section>
+
+<section class="block" id="system"><div class="wrap">
+  <div class="shead reveal"><div><h2>Built from the ad's palette</h2><p>Deep violet, one warm coral for action, and four category colours that stay the same on every chart, row and tag.</p></div></div>
+  <div class="ds">
+    <div class="glass reveal"><h3>Colour</h3><div class="swatches">
+      <div class="sw dk wide" style="background:linear-gradient(135deg,#120c2b,#2c1670)">Night violet<span>#120c2b to #2c1670</span></div>
+      <div class="sw wide" style="background:linear-gradient(135deg,#ff8a5c,#ff4d6d);color:#fff">Pulse coral<span>#ff8a5c to #ff4d6d</span></div>
+      <div class="sw" style="background:#ff6a4d">Food<span>#ff6a4d</span></div>
+      <div class="sw" style="background:#7c6cff;color:#fff">Home<span>#7c6cff</span></div>
+      <div class="sw" style="background:#33c7a3">Transport<span>#33c7a3</span></div>
+      <div class="sw" style="background:#ffb020">Going out<span>#ffb020</span></div>
+      <div class="sw" style="background:#b9adff">Lavender<span>#b9adff</span></div>
+      <div class="sw" style="background:#f1edff">Light mode<span>#f1edff</span></div>
+      <div class="sw dk" style="background:#1a1440">Ink<span>#1a1440</span></div>
+      <div class="sw" style="background:linear-gradient(140deg,rgba(255,255,255,.9),rgba(255,255,255,.55))">Glass<span>white, 17% to 5%</span></div>
+    </div></div>
+    <div class="glass type reveal"><h3>Type</h3>
+      <div class="spec"><div class="big num">$1,284<small>.60</small></div><div class="meta">Sora Bold for numbers and headings. Cents set at half size, the way the ad shows them.</div></div>
+      <div class="spec"><div class="scale"><span style="font-size:58px">Aa<small>58 total</small></span><span style="font-size:32px">Aa<small>32 title</small></span><span style="font-size:19px">Aa<small>19 section</small></span><span style="font-size:16px">Aa<small>16 row</small></span><span style="font-size:13px">Aa<small>13 note</small></span></div><div class="meta">One scale for every screen, so a total always looks like a total.</div></div>
+      <div class="spec"><div class="body">Pulse reads your card and sorts every spend. Plain words, never bank codes.</div><div class="meta">Manrope for everything you read. Sentence case, short labels.</div></div>
+    </div>
+    <div class="parts">
+      <div class="part reveal"><div class="demo"><div class="glassdemo glass"></div></div><b>Glass panels</b><p>Blurred and tinted with a bright rim at the top left, like light catching an edge.</p></div>
+      <div class="part reveal"><div class="demo"><div class="radii"><i style="border-radius:16px">16</i><i style="border-radius:24px">24</i><i style="border-radius:32px">32</i></div></div><b>Rounded everywhere</b><p>Icon tiles at 16, rows at 24, cards at 32, sheets at 38. Bigger things get softer corners.</p></div>
+      <div class="part reveal"><div class="demo"><div class="tilerow"><i style="--c:#ff6a4d"></i><i style="--c:#7c6cff"></i><i style="--c:#33c7a3"></i><i style="--c:#ffb020"></i></div></div><b>Category tiles</b><p>Each one glows in its own colour, so you can spot a category before you read it.</p></div>
+      <div class="part reveal"><div class="demo"><div class="bars2"><i style="--w:87%;--c:#ff6a4d"></i><i style="--w:77%;--c:#7c6cff"></i><i style="--w:100%;--c:#ff5a50"></i></div></div><b>Progress bars</b><p>Fill in the category colour and turn red the moment a budget is crossed.</p></div>
+    </div>
+  </div>
+</div></section>
+
+<section class="block" id="process"><div class="wrap">
+  <div class="shead reveal"><div><h2>Four directions, one winner</h2><p>Before building twelve screens I drew the same two screens in four styles, with the same data. Open any of them to see it move.</p></div></div>
+  <div class="proc">
+    <a class="pcard glass won reveal" href="style-samples/style-1-aurora-glass.html"><img src="process/style-1-aurora-glass.png" alt="Aurora glass: frosted panels over a violet and coral glow" width="1600" height="1688" loading="lazy"><h3>Aurora glass<em>Chosen</em></h3><p>Frosted panels floating over a slow violet and coral aurora.</p></a>
+    <a class="pcard glass reveal" href="style-samples/style-2-colour-blocks.html"><img src="process/style-2-colour-blocks.png" alt="Colour blocks: solid saturated tiles like a bento box" width="1600" height="1688" loading="lazy"><h3>Colour blocks</h3><p>Solid, saturated tiles packed tight, with no glass or shadows.</p></a>
+    <a class="pcard glass reveal" href="style-samples/style-3-soft-depth.html"><img src="process/style-3-soft-depth.png" alt="Soft depth: raised panels and a tilted card" width="1600" height="1688" loading="lazy"><h3>Soft depth</h3><p>Raised panels, pressed wells and a card you could pick up.</p></a>
+    <a class="pcard glass reveal" href="style-samples/style-4-pulse-line.html"><img src="process/style-4-pulse-line.png" alt="Pulse line: oversized numbers and one live line" width="1600" height="1688" loading="lazy"><h3>Pulse line</h3><p>Oversized numbers, one heartbeat line, a sheet you pull up.</p></a>
+  </div>
+  <div class="why">
+    <div class="glass reveal"><b>It carries the ad</b><p>The ad glows. Aurora glass keeps that light behind every screen, so the app feels like the product the ad promised.</p></div>
+    <div class="glass reveal"><b>It works in light mode</b><p>The same panels turn milky white over a pastel aurora. Some of the other directions lost their character without the dark.</p></div>
+    <div class="glass reveal"><b>It lets colour mean something</b><p>Neutral glass leaves the four category colours as the loudest thing on screen, which is exactly where your eye should go.</p></div>
+  </div>
+</div></section>
+
+<section class="block" id="ad"><div class="wrap">
+  <div class="shead reveal"><div><h2>Where it started</h2><p>The 10-second ad came first. The app had to live up to it.</p></div></div>
+  <div class="adwrap reveal">
+    <video class="v169" src="media/pulse-app-ad-16x9.mp4" poster="media/pulse-app-ad-poster.png" controls muted playsinline loop preload="metadata" width="1920" height="1080"></video>
+    <div class="adnote glass">
+      <video class="v916" src="media/pulse-app-ad-9x16.mp4" controls muted playsinline loop preload="metadata"></video>
+      <div><h3>Pulse, 10 seconds</h3><p>Rendered entirely from code: the phone, the charts, the type and the music. It comes in 16:9 for YouTube and 9:16 for Reels and TikTok.</p></div>
+      <a href="https://github.com/NUMINAE/numinae-motion">See the code for all five ads</a>
+    </div>
+  </div>
+</div></section>
+
+<section class="wrap"><div class="close glass reveal">
+  <h2>Want an app like this designed?</h2>
+  <p>I design and build apps, websites, Telegram bots and Mini Apps, from the first sketch to a working prototype. Tell me what you're making.</p>
+  <a class="btn primary" href="https://t.me/numinaestudio">Message me on Telegram</a>
+</div></section>
+</main>
+
+<footer><div class="wrap">
+  <img src="brand/numinae-lockup-horizontal-white.svg" alt="Numinae">
+  <p>Pulse is a concept app designed and built by Numinae Studio. Every name, bank, card and number in it is made up.</p>
+  <nav><a href="https://github.com/NUMINAE/pulse-app">Source on GitHub</a><a href="https://t.me/numinaestudio">Telegram</a></nav>
+</div></footer>
+
+<script>
+const SCREENS = [
+  ['intro', 'onboard', 'Intro', 'Three pages that go from a wall of bank codes to plain answers.', '#b9adff'],
+  ['link', 'link', 'Link a card', 'Pick a bank, then watch Pulse read the card and file every spend.', '#b9adff'],
+  ['dashboard', 'home', 'Dashboard', 'November at a glance: the total, the ring, what is left and today.', '#ff6a4d'],
+  ['categories', 'categories', 'Categories', 'A ring you can turn, with October to compare against.', '#ff6a4d'],
+  ['transactions', 'transactions', 'Transactions', 'Search and filter all 96 spends, grouped by day.', '#7c6cff'],
+  ['spend', 'tx', 'Spend detail', 'One spend, how often you go there, and a way to split it.', '#7c6cff'],
+  ['budgets', 'budgets', 'Budgets', 'What is left for the month and for each category.', '#33c7a3'],
+  ['insights', 'insights', 'Insights', 'Your pace against October, the last 7 days and what Pulse noticed.', '#33c7a3'],
+  ['subscriptions', 'subs', 'Subscriptions', 'Five regular payments Pulse found, with the next two weeks.', '#ffb020'],
+  ['goals', 'goals', 'Savings goals', 'Three goals with rings that fill when you add money.', '#ffb020'],
+  ['cards', 'cards', 'Cards', 'Linked cards in a deck you swipe through.', '#e9e5ff'],
+  ['profile', 'profile', 'Profile', 'Theme, notifications, Face ID and a CSV export.', '#e9e5ff'],
+];
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const proto = $('#proto'), send = m => { try { proto.contentWindow.postMessage({ pulse: m.pulse, ...m }, '*'); } catch (_) {} };
+
+// gallery
+$('#grid').innerHTML = SCREENS.map(([f, s, name, note]) => `<button class="shot reveal" data-s="${s}" aria-label="Open ${name} in the prototype">
+  <div class="img"><img class="d" src="screens/pulse-${f}-dark.png" alt="${name}, dark" loading="lazy" width="780" height="1688"><img class="l" src="screens/pulse-${f}-light.png" alt="${name}, light" loading="lazy" width="780" height="1688"></div>
+  <div class="cap"><h3>${name}</h3><span class="try">Try it</span></div><p>${note}</p></button>`).join('');
+const wide = () => matchMedia('(min-width: 861px)').matches;
+$('#grid').addEventListener('click', e => { const b = e.target.closest('.shot'); if (!b) return;
+  if (!wide()) { location.href = 'app/index.html?screen=' + b.dataset.s; return; }
+  jump(b.dataset.s); scrollTo({ top: 0, behavior: 'smooth' }); });
+
+// jump list next to the phone
+$('#jump').innerHTML = SCREENS.map(([f, s, name, , c]) => `<li><button data-s="${s}" style="--c:${c}"><i></i>${name}</button></li>`).join('');
+function jump(s) { send({ pulse: 'go', screen: s, force: s === 'onboard' || s === 'link' }); mark(s); }
+function mark(s) { $$('#jump button').forEach(b => b.classList.toggle('on', b.dataset.s === s)); }
+$('#jump').addEventListener('click', e => { const b = e.target.closest('button'); if (b) jump(b.dataset.s); });
+addEventListener('message', e => { const m = e.data; if (m && m.pulse === 'screen' && e.source === proto.contentWindow) { mark(m.name); setThemeUI($('#theme'), m.theme); } });
+
+// theme switches
+function setThemeUI(el, t) { el.classList.toggle('light', t === 'light'); el.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.t === t)); }
+$('#theme').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; setThemeUI($('#theme'), b.dataset.t); send({ pulse: 'theme', theme: b.dataset.t }); });
+$('#gtoggle').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; setThemeUI($('#gtoggle'), b.dataset.t); $('#grid').classList.toggle('light', b.dataset.t === 'light'); });
+
+// fit the hero phone to short screens
+function fitPhone() { const ph = $('.stage .phone'), k = Math.min(1, (innerHeight - 120) / 866);
+  ph.classList.toggle('scaled', k < 1); ph.style.setProperty('--k', k.toFixed(3)); }
+fitPhone(); addEventListener('resize', fitPhone);
+
+// motion demos load when they come into view, and replay on demand
+const demos = $$('.mcard iframe');
+const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting && !en.target.src) en.target.src = en.target.dataset.src; }), { rootMargin: '200px' });
+demos.forEach(f => io.observe(f));
+$$('[data-replay]').forEach(b => b.addEventListener('click', () => { const f = demos[+b.dataset.replay]; f.src = f.dataset.src + '&r=' + Date.now(); }));
+
+// quiet reveals; the ad plays muted while on screen
+const rv = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { en.target.classList.add('seen'); rv.unobserve(en.target); } }), { threshold: .12 });
+$$('.reveal').forEach(el => rv.observe(el));
+const vio = new IntersectionObserver(es => es.forEach(en => { const v = en.target; if (getComputedStyle(v).display === 'none') return; if (en.isIntersecting) v.play().catch(() => {}); else v.pause(); }), { threshold: .5 });
+$$('video').forEach(v => vio.observe(v));
+
+const head = $('header.top'); addEventListener('scroll', () => head.classList.toggle('stuck', scrollY > 10), { passive: true });
+document.fonts.ready.then(() => requestAnimationFrame(() => document.documentElement.classList.add('ready')));
+setTimeout(() => document.documentElement.classList.add('ready'), 1200);
+</script>
+</body>
+</html>
