@@ -1,0 +1,46 @@
+/* Pulse style samples: shared reset, fonts, phone frame, status bar */
+@font-face { font-family: Sora; src: url(fonts/sora.woff2) format('woff2'); font-weight: 100 900; font-display: block; }
+@font-face { font-family: Manrope; src: url(fonts/manrope.woff2) format('woff2'); font-weight: 200 800; font-display: block; }
+
+:root {
+  --bg0: #120c2b; --bg1: #2c1670; --surface: #1a1340;
+  --coral: #ff6a4d; --coral-a: #ff8a5c; --coral-b: #ff4d6d;
+  --lav: #b9adff; --violet: #7c6cff; --green: #33c7a3; --amber: #ffb020; --other: #e9e5ff;
+  --paper: #f4f1ff; --ink-d: #1a1440;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { font-family: Manrope, system-ui, sans-serif; background: #0b0720; color: #fff; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, .num { font-family: Sora, sans-serif; }
+.num { font-variant-numeric: tabular-nums; }
+svg { display: block; }
+button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+
+/* desktop: two phones side by side with the file name above */
+.stage { min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; padding: 36px 24px; }
+.stage > header { text-align: center; }
+.stage > header h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
+.stage > header p { margin-top: 6px; font-size: 15px; color: rgba(230,224,255,.7); font-weight: 500; }
+.phones { display: flex; gap: 48px; flex-wrap: wrap; justify-content: center; }
+.device { padding: 11px; border-radius: 66px; background: linear-gradient(160deg, #3a3162, #17122e 40%, #0e0a20); box-shadow: 0 40px 80px -20px rgba(0,0,0,.7), inset 0 0 0 1.5px rgba(255,255,255,.14); }
+.screen { position: relative; width: 390px; height: 844px; border-radius: 56px; overflow: hidden; isolation: isolate; }
+.device figcaption { display: none; }
+
+/* status bar */
+.status { position: absolute; inset: 0 0 auto 0; height: 54px; z-index: 30; display: flex; align-items: center; justify-content: space-between; padding: 6px 30px 0 38px; font: 600 16px/1 Manrope, sans-serif; letter-spacing: -0.01em; pointer-events: none; }
+.status .island { position: absolute; left: 50%; top: 11px; width: 118px; height: 34px; margin-left: -59px; border-radius: 20px; background: #000; }
+.status .sys { display: flex; gap: 6px; align-items: center; }
+.status .sys svg { height: 12px; width: auto; }
+.home-ind { position: absolute; left: 50%; bottom: 8px; width: 136px; height: 5px; margin-left: -68px; border-radius: 3px; background: currentColor; opacity: .9; z-index: 40; pointer-events: none; }
+
+.ico { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* single-screen mode: ?screen=dash or ?screen=budget, or any narrow viewport */
+body.solo .stage { padding: 0; gap: 0; display: block; }
+body.solo .stage > header { display: none; }
+body.solo .phones { gap: 0; display: block; }
+body.solo .device { padding: 0; border-radius: 0; background: none; box-shadow: none; }
+body.solo .screen { width: 100vw; height: 100vh; height: 100dvh; border-radius: 0; }
+body.solo .device.hide { display: none; }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01s !important; animation-delay: 0s !important; transition-duration: .01s !important; } }

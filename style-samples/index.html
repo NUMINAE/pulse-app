@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pulse: four style directions</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  body { background: #0b0720; }
+  .wrap { max-width: 1680px; margin: 0 auto; padding: 44px 32px 80px; }
+  .wrap > h1 { font-size: 40px; font-weight: 700; letter-spacing: -0.04em; }
+  .wrap > p { margin-top: 8px; font-size: 17px; font-weight: 500; color: rgba(230,224,255,.75); max-width: 70ch; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 22px; margin-top: 34px; }
+  .dir { background: #17103a; border-radius: 36px; padding: 24px 22px 26px; }
+  .dir h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.03em; }
+  .dir code { display: inline-block; margin-top: 8px; font: 700 13.5px Manrope; color: #1a1440; background: #b9adff; border-radius: 12px; padding: 5px 11px; }
+  .dir p { margin-top: 10px; font-size: 14.5px; font-weight: 500; line-height: 1.5; color: rgba(230,224,255,.78); min-height: 66px; }
+  .pair { display: flex; gap: 12px; margin-top: 16px; }
+  .fr { width: 163.8px; height: 354.5px; border-radius: 26px; overflow: hidden; flex: none; box-shadow: 0 0 0 4px #2a2060; }
+  .fr iframe { width: 390px; height: 844px; border: 0; transform: scale(.42); transform-origin: 0 0; }
+  .dir a { display: inline-flex; align-items: center; height: 46px; padding: 0 22px; margin-top: 18px; border-radius: 23px; background: #ff6a4d; color: #fff; font: 700 15px Sora; letter-spacing: -0.02em; text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Pulse: four style directions</h1>
+  <p>Each direction shows the same two screens with the same data: the dashboard in dark and Budgets in light. The previews are live, so the motion plays. Open a file to see it at full size.</p>
+  <div class="grid">
+    <section class="dir"><h2>Aurora glass</h2><code>style-1-aurora-glass.html</code><p>Frosted panels floating over a slow violet and coral aurora. Soft, luminous, closest to the ad's glow.</p><div class="pair"><div class="fr"><iframe src="style-1-aurora-glass.html?screen=dash" title="Aurora glass dashboard"></iframe></div><div class="fr"><iframe src="style-1-aurora-glass.html?screen=budget" title="Aurora glass budgets"></iframe></div></div><a href="style-1-aurora-glass.html">Open full size</a></section>
+    <section class="dir"><h2>Colour blocks</h2><code>style-2-colour-blocks.html</code><p>Solid, saturated tiles packed tight like a bento box. Loud, flat and confident, with no glass or shadows.</p><div class="pair"><div class="fr"><iframe src="style-2-colour-blocks.html?screen=dash" title="Colour blocks dashboard"></iframe></div><div class="fr"><iframe src="style-2-colour-blocks.html?screen=budget" title="Colour blocks budgets"></iframe></div></div><a href="style-2-colour-blocks.html">Open full size</a></section>
+    <section class="dir"><h2>Soft depth</h2><code>style-3-soft-depth.html</code><p>Everything is a physical object: a card you could pick up, a chart with thickness, raised panels and pressed wells.</p><div class="pair"><div class="fr"><iframe src="style-3-soft-depth.html?screen=dash" title="Soft depth dashboard"></iframe></div><div class="fr"><iframe src="style-3-soft-depth.html?screen=budget" title="Soft depth budgets"></iframe></div></div><a href="style-3-soft-depth.html">Open full size</a></section>
+    <section class="dir"><h2>Pulse line</h2><code>style-4-pulse-line.html</code><p>The heartbeat from the app icon becomes the interface: oversized numbers, one live line, a sheet of spends you pull up.</p><div class="pair"><div class="fr"><iframe src="style-4-pulse-line.html?screen=dash" title="Pulse line dashboard"></iframe></div><div class="fr"><iframe src="style-4-pulse-line.html?screen=budget" title="Pulse line budgets"></iframe></div></div><a href="style-4-pulse-line.html">Open full size</a></section>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pulse style sample 4: Pulse line</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  /* ---------- Pulse line: the heartbeat from the app icon becomes the interface. Oversized numbers, one live line edge to edge, a sheet of spends you pull up. ---------- */
+  .screen { font-weight: 600; }
+  .pad { position: absolute; inset: 54px 0 0 0; padding: 10px 24px 0; }
+  .top { display: flex; align-items: center; justify-content: space-between; height: 48px; }
+  .mon { display: inline-flex; align-items: center; gap: 4px; font: 700 22px Sora; letter-spacing: -0.03em; }
+  .mon .ico { width: 22px; height: 22px; stroke-width: 2.6; }
+  .ava { width: 42px; height: 42px; border-radius: 21px; display: grid; place-items: center; font: 700 17px Sora; }
+  .hero { margin-top: 8px; }
+  .hero .lbl { font-size: 15px; font-weight: 700; }
+  .hero .amt { font: 700 76px/1 Sora; letter-spacing: -0.065em; margin: 4px 0 0 -4px; white-space: nowrap; }
+  .hero .amt small { font-size: 38px; letter-spacing: -0.04em; }
+  .trend { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 15px; font-weight: 700; }
+  .trend .ico { width: 18px; height: 18px; stroke-width: 2.8; }
+  .chart { position: relative; margin: 6px -24px 0; height: 150px; }
+  .chart svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .chart .line { fill: none; stroke-width: 3.5; stroke-linejoin: round; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.8s cubic-bezier(.5,0,.2,1) .3s; }
+  body.in .chart .line { stroke-dashoffset: 0; }
+  .chart .area { opacity: 0; transition: opacity .9s 1.5s; }
+  body.in .chart .area { opacity: 1; }
+  .chart .late { opacity: 0; transition: opacity .5s 2s; }
+  body.in .chart .late { opacity: 1; }
+  .chart .halo { transform-box: fill-box; transform-origin: center; animation: halo 1.9s ease-out 2.2s infinite; opacity: 0; }
+  @keyframes halo { from { transform: scale(.6); opacity: .9; } to { transform: scale(3.2); opacity: 0; } }
+  .chart text { font: 700 11.5px Manrope; }
+  .bubble { position: absolute; transform: translate(-50%, -100%); height: 30px; padding: 0 11px; border-radius: 15px; display: inline-flex; align-items: center; font: 700 12.5px Sora; letter-spacing: -0.02em; white-space: nowrap; opacity: 0; transition: opacity .4s 2s, margin .5s cubic-bezier(.2,1.6,.4,1) 2s; margin-top: 8px; }
+  body.in .bubble { opacity: 1; margin-top: 0; }
+  .bubble.r { left: auto; right: 18px; transform: translateY(-100%); }
+
+  .split { display: flex; gap: 4px; height: 40px; margin-top: 12px; }
+  .split i { border-radius: 13px; background: var(--c); flex: 0 0 0; transition: flex-grow 1s cubic-bezier(.2,.9,.2,1) calc(var(--i) * 90ms + .5s); }
+  .split i:first-child { border-radius: 20px 13px 13px 20px; } .split i:last-child { border-radius: 13px 20px 20px 13px; }
+  body.in .split i { flex-grow: var(--s); }
+  .keys { display: grid; grid-template-columns: repeat(5, auto); justify-content: space-between; margin-top: 10px; }
+  .keys li { list-style: none; }
+  .keys b { display: block; font: 700 20px/1.1 Sora; letter-spacing: -0.04em; }
+  .keys span { font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 5px; }
+  .keys span::before { content: ''; width: 8px; height: 8px; border-radius: 4px; background: var(--c); }
+
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; border-radius: 36px 36px 0 0; padding: 26px 24px 0; }
+  .sheet::before { content: ''; position: absolute; left: 50%; top: 9px; width: 40px; height: 5px; margin-left: -20px; border-radius: 3px; background: currentColor; opacity: .28; }
+  .sec { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px; }
+  .sec h2 { font-size: 20px; font-weight: 700; letter-spacing: -0.03em; }
+  .sec span { font: 700 15px Sora; letter-spacing: -0.02em; }
+  .row { display: grid; grid-template-columns: 6px 1fr auto; align-items: center; gap: 14px; height: 56px; }
+  .row i { width: 6px; height: 34px; border-radius: 3px; background: var(--c); }
+  .row b { display: block; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; }
+  .row small { font-size: 12.5px; font-weight: 600; }
+  .row .a { font: 700 19px Sora; letter-spacing: -0.04em; }
+
+  .tabs { position: absolute; left: 50%; bottom: 24px; width: 304px; margin-left: -152px; height: 62px; border-radius: 31px; display: grid; grid-template-columns: repeat(5, 1fr); align-items: center; justify-items: center; z-index: 20; }
+  .tabs button { width: 48px; height: 48px; border-radius: 24px; display: grid; place-items: center; position: relative; }
+  .tabs .on { color: var(--coral); }
+  .tabs .on::after { content: ''; position: absolute; bottom: 2px; left: 50%; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 3px; background: var(--coral); }
+  .tabs .add { background: var(--coral); color: #fff; width: 46px; height: 46px; }
+  .tabs .add .ico { stroke-width: 2.8; }
+
+  /* ----- dark ----- */
+  .dark { background: linear-gradient(200deg, #25146a 0%, #120c2b 46%); color: #fff; }
+  .dark .soft { color: var(--lav); }
+  .dark .ava { background: var(--lav); color: var(--ink-d); }
+  .dark .trend { color: #4fe0bb; }
+  .dark .chart .line { stroke: var(--coral); filter: drop-shadow(0 0 7px rgba(255,106,77,.75)); }
+  .dark .chart text { fill: #8f83d6; }
+  .dark .chart .guide { stroke: #5a4bb0; }
+  .dark .chart .proj { stroke: var(--lav); }
+  .dark .bubble { background: #fff; color: var(--ink-d); }
+  .dark .sheet { background: #241a62; top: 530px; }
+  .dark .tabs { background: #fff; color: #6a628f; box-shadow: 0 16px 30px -10px rgba(4,1,20,.9); }
+
+  /* ----- light ----- */
+  .light { background: #f4f1ff; color: var(--ink-d); }
+  .light .status, .light .home-ind { color: var(--ink-d); }
+  .light .soft { color: #6b6394; }
+  .light .ava { background: var(--ink-d); color: #fff; }
+  .light .trend { color: #e9503a; }
+  .light .chart .line { stroke: #4e3ce0; }
+  .light .chart text { fill: #8a82b5; }
+  .light .chart .guide { stroke: #b9adff; }
+  .light .chart .proj { stroke: #4e3ce0; }
+  .light .bubble { background: var(--ink-d); color: #fff; }
+  .light .sheet { background: #fff; top: 430px; box-shadow: 0 -18px 40px -20px rgba(74,52,170,.45); }
+  .light .tabs { background: var(--ink-d); color: #a59ed0; box-shadow: 0 16px 30px -12px rgba(26,20,64,.7); }
+  .light .tabs .on { color: #ff8468; }
+
+  /* budgets */
+  .brow { padding: 9px 0 10px; }
+  .brow .l1 { display: flex; justify-content: space-between; align-items: baseline; }
+  .brow .l1 b { font-size: 17px; font-weight: 700; letter-spacing: -0.01em; }
+  .brow .l1 span { font: 700 15px Sora; letter-spacing: -0.03em; }
+  .brow .l1 span em { font-style: normal; font-weight: 600; color: #8a82b5; }
+  .bar { height: 12px; border-radius: 6px; margin-top: 7px; background: #ebe6ff; overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 0; border-radius: inherit; background: var(--c); transition: width 1.1s cubic-bezier(.2,.9,.2,1) calc(var(--d) * 80ms + .6s); }
+  body.in .bar i { width: var(--w); }
+  .brow.over .l1 span { color: #e4352f; }
+
+  /* motion: type rises out of a mask, the sheet slides up */
+  .mask { overflow: hidden; }
+  .mask > * { transform: translateY(110%); }
+  body.in .mask > * { animation: up .9s cubic-bezier(.16,1,.3,1) both; animation-delay: calc(var(--d, 0) * 80ms); }
+  @keyframes up { from { transform: translateY(110%); } to { transform: none; } }
+  .fade { opacity: 0; }
+  body.in .fade { animation: fade .7s both; animation-delay: calc(var(--d, 0) * 80ms); }
+  @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .sheet { transform: translateY(100%); }
+  body.in .sheet { animation: sheet 1s cubic-bezier(.16,1,.3,1) .5s both; }
+  @keyframes sheet { from { transform: translateY(100%); } to { transform: none; } }
+</style>
+</head>
+<body>
+<main class="stage">
+  <header><h1>style-4-pulse-line.html</h1><p>Pulse line: the heartbeat from the app icon becomes the interface. Oversized numbers, one live line, a sheet of spends you pull up. Dashboard in dark, Budgets in light.</p></header>
+  <div class="phones">
+    <figure class="device" data-screen="dash"><div class="screen dark">
+      <div class="pad">
+        <div class="top fade"><button class="mon">November<svg class="ico" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button><div class="ava">M</div></div>
+        <div class="hero"><div class="mask"><div class="lbl soft">Spent in November</div></div><div class="mask"><div class="amt num" style="--d:1" data-count="1284.6" data-pre="$" data-split data-delay="150"></div></div><div class="mask"><div class="trend" style="--d:2" data-i="down">12% less than October</div></div></div>
+        <div class="chart" id="c4"></div>
+        <div class="split" id="split4"></div>
+        <ul class="keys fade" style="--d:9" id="keys4"></ul>
+      </div>
+      <div class="sheet"><div class="sec"><h2>Today</h2><span class="soft num">-$86.30</span></div><div id="tx4"></div></div>
+      <nav class="tabs"><button class="on" data-i="home" aria-label="Home"></button><button data-i="pie" aria-label="Categories"></button><button class="add" data-i="plus" aria-label="Add"></button><button data-i="wallet" data-go="budget" aria-label="Budgets"></button><button data-i="chart" aria-label="Insights"></button></nav>
+    </div></figure>
+
+    <figure class="device" data-screen="budget"><div class="screen light">
+      <div class="pad">
+        <div class="top fade"><button class="mon">Budgets</button><div class="ava">M</div></div>
+        <div class="hero"><div class="mask"><div class="lbl soft">Left to spend in November</div></div><div class="mask"><div class="amt num" style="--d:1" data-count="515.4" data-pre="$" data-split data-delay="150"></div></div><div class="mask"><div class="trend" style="--d:2" data-i="pulse">$73 a day for 7 days</div></div></div>
+        <div class="chart" id="c4b"></div>
+      </div>
+      <div class="sheet"><div id="b4"></div></div>
+      <nav class="tabs"><button data-i="home" data-go="dash" aria-label="Home"></button><button data-i="pie" aria-label="Categories"></button><button class="add" data-i="plus" aria-label="Add"></button><button class="on" data-i="wallet" aria-label="Budgets"></button><button data-i="chart" aria-label="Insights"></button></nav>
+    </div></figure>
+  </div>
+</main>
+<script src="shared.js"></script>
+<script>
+  const days = PULSE.days.slice(); days[0] = 38.3;               // sums to 1,284.60
+  const X = d => 22 + (d - 1) * (346 / 29);
+  // ---- dashboard: daily spend as a heartbeat ----
+  (function () {
+    const Y = v => 126 - v / 125 * 100, today = days.length, avg = PULSE.spent / today;
+    const pts = days.map((v, i) => [X(i + 1), Y(v)]);
+    const d = 'M' + pts.map(p => p.map(n => n.toFixed(1)).join(' ')).join('L');
+    const [tx, ty] = pts[today - 1];
+    document.getElementById('c4').innerHTML = `<svg viewBox="0 0 390 150" preserveAspectRatio="none">
+      <defs><linearGradient id="ar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff6a4d" stop-opacity=".42"/><stop offset="1" stop-color="#ff6a4d" stop-opacity="0"/></linearGradient></defs>
+      <path class="area" d="${d}L${tx} 130L${pts[0][0]} 130Z" fill="url(#ar)"/>
+      <path class="guide late" d="M0 ${Y(60)}H390" stroke-width="1.5" stroke-dasharray="2 7" stroke-linecap="round"/>
+      <text class="late" x="372" y="${Y(60) + 36}" text-anchor="end">$60 a day budget</text>
+      <path class="proj late" d="M${tx} ${ty}L${X(24)} ${Y(avg)}H${X(30)}" fill="none" stroke-width="3" stroke-dasharray="0.1 8" stroke-linecap="round"/>
+      <path class="line" pathLength="1" d="${d}"/>
+      <circle class="halo" cx="${tx}" cy="${ty}" r="6" fill="#ff6a4d"/><circle class="late" cx="${tx}" cy="${ty}" r="6.5" fill="#fff" stroke="#ff6a4d" stroke-width="4"/>
+      ${[1, 8, 15, 22, 30].map(n => `<text class="late" x="${X(n)}" y="147" text-anchor="middle">${n}</text>`).join('')}
+    </svg><span class="bubble" style="left:${tx / 390 * 100}%;top:${ty - 14}px">Today $86.30</span>`;
+  })();
+  document.getElementById('split4').innerHTML = PULSE.cats.map((c, i) => `<i style="--c:${c.color};--s:${c.share * 100};--i:${i}"></i>`).join('');
+  document.getElementById('keys4').innerHTML = PULSE.cats.map(c => `<li style="--c:${c.color}"><b class="num">${Math.round(c.share * 100)}%</b><span class="soft">${c.name}</span></li>`).join('');
+  const col = k => PULSE.cats.find(c => c.key === k).color;
+  document.getElementById('tx4').innerHTML = PULSE.tx.slice(0, 3).map(t => `<div class="row" style="--c:${col(t.key)}"><i></i><div><b>${t.name}</b><small class="soft">${t.cat}, ${t.time}</small></div><div class="a num">-${money(t.amt)}</div></div>`).join('');
+
+  // ---- budgets: what is left, burning down through the month ----
+  (function () {
+    const Y = v => 18 + (1800 - v) / 1800 * 108; let rem = 1800; const pts = [[X(1) - 12, Y(1800)]];
+    days.forEach((v, i) => { rem -= v; pts.push([X(i + 1), Y(rem)]); });
+    const d = 'M' + pts.map(p => p.map(n => n.toFixed(1)).join(' ')).join('L');
+    const [tx, ty] = pts[pts.length - 1], endRem = PULSE.left - 7 * (PULSE.spent / 23);
+    document.getElementById('c4b').innerHTML = `<svg viewBox="0 0 390 150" preserveAspectRatio="none">
+      <defs><linearGradient id="ar2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4e3ce0" stop-opacity=".22"/><stop offset="1" stop-color="#4e3ce0" stop-opacity="0"/></linearGradient></defs>
+      <path class="area" d="${d}L${tx} 130L${pts[0][0]} 130Z" fill="url(#ar2)"/>
+      <path class="guide late" d="M${pts[0][0]} ${Y(1800)}L${X(30)} ${Y(0)}" stroke-width="2" stroke-dasharray="2 7" stroke-linecap="round" fill="none"/>
+      <path class="proj late" d="M${tx} ${ty}L${X(30)} ${Y(endRem)}" fill="none" stroke-width="3" stroke-dasharray="0.1 8" stroke-linecap="round"/>
+      <path class="line" pathLength="1" d="${d}"/>
+      <circle class="halo" cx="${tx}" cy="${ty}" r="6" fill="#ff6a4d"/><circle class="late" cx="${tx}" cy="${ty}" r="6.5" fill="#fff" stroke="#ff6a4d" stroke-width="4"/>
+      ${[1, 8, 15, 22, 30].map(n => `<text class="late" x="${X(n)}" y="147" text-anchor="middle">${n}</text>`).join('')}
+    </svg><span class="bubble r" style="top:${ty - 18}px">On pace to keep $${Math.round(endRem)}</span>`;
+  })();
+  document.getElementById('b4').innerHTML = PULSE.cats.map((c, i) => { const over = c.spent > c.budget, cc = c.key === 'other' ? '#b9adff' : c.color;
+    return `<div class="brow ${over ? 'over' : ''}" style="--d:${i}"><div class="l1"><b>${c.name}</b><span class="num">${over ? 'Over by ' + money(c.spent - c.budget) : money(c.spent) + ' <em>of ' + money(c.budget, 0) + '</em>'}</span></div><div class="bar" style="--w:${Math.min(100, c.spent / c.budget * 100)}%;--c:${over ? '#e4352f' : cc}"><i></i></div></div>`; }).join('');
+  boot();
+</script>
+</body>
+</html>

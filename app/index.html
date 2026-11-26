@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Pulse: know where it goes</title>
+<meta name="description" content="Pulse reads your card and sorts every spend. A working prototype of the Pulse budgeting app, designed and built by Numinae Studio.">
+<meta name="theme-color" content="#120c2b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pulse">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preload" href="fonts/sora.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div id="device" data-aurora="onboard">
+  <div id="aurora"><i class="a"><b></b></i><i class="b"><b></b></i><i class="c"><b></b></i></div>
+  <div class="status" aria-hidden="true"><span>9:41</span><div class="island"></div><div class="sys">
+    <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+    <svg viewBox="0 0 17 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M1.5 4.2a10 10 0 0 1 14 0M4 7a6.4 6.4 0 0 1 9 0"/><circle cx="8.5" cy="10" r="1" fill="currentColor" stroke="none"/></svg>
+    <svg viewBox="0 0 27 12" fill="none"><rect x=".7" y=".7" width="22.6" height="10.6" rx="3.4" stroke="currentColor" opacity=".45" stroke-width="1.2"/><rect x="2.2" y="2.2" width="17" height="7.6" rx="2" fill="currentColor"/><rect x="24.6" y="4" width="1.8" height="4" rx=".9" fill="currentColor" opacity=".5"/></svg>
+  </div></div>
+  <main id="view"></main>
+  <div id="edge" hidden></div>
+  <nav id="tabs" class="tabs hide" aria-label="Main">
+    <i class="ind"></i>
+    <button data-go="home" data-tab="home" data-i="home" aria-label="Home"></button>
+    <button data-go="categories" data-tab="categories" data-i="pie" aria-label="Categories"></button>
+    <button class="fab" data-sheet="add" data-i="plus" aria-label="Add a spend"></button>
+    <button data-go="budgets" data-tab="budgets" data-i="wallet" aria-label="Budgets"></button>
+    <button data-go="insights" data-tab="insights" data-i="chart" aria-label="Insights"></button>
+  </nav>
+  <div class="homeind"></div>
+</div>
+<script src="js/data.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/screens.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
